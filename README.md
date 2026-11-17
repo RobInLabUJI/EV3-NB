@@ -10,23 +10,36 @@ The EV3 is running its standard firmware, no need to use a SD card.
 
 ## Prerequisites
 
-* Python 3.x
-* [Jupyter notebook](http://jupyter.readthedocs.io/en/latest/install.html)
-* [PyBluez](https://github.com/karulis/pybluez)
-* [ev3-python3](https://github.com/ChristophGaukel/ev3-python3)
+* Ubuntu 22.04.3
+* Python 3.10.12
+* python3-venv
+* python3-bluez 0.23
+* libbluetooth-dev 5.64
+* [Jupyter](https://jupyter.org/) 1.1.1
+* [Matplotlib](https://matplotlib.org/) 3.10.9
+* [ev3-python3](https://github.com/ChristophGaukel/ev3-python3) 0.9.10.2
 
 ## Setup
+```
+sudo apt update && sudo apt install -y libbluetooth-dev python3-bluez python3-venv
+python3 -m venv lego-nb
+source lego-nb/bin/activate
+python3 -m pip install jupyter==1.1.1 matplotlib==3.10.9 ev3_dc==0.9.10.2
+cp -R /usr/lib/python3/dist-packages/bluetooth/ lego-nb/lib/python3.10/site-packages/
+cd lego-nb && git clone https://github.com/RobInLabUJI/EV3-NB.git
+```
 
-Run the install script:
-
-`./script/install.bash`
+## Bluetooth pairing
 
 Activate Bluetooth and pair your robot and computer:
-
-`./script/pair.bash`
-
-The script launches [`bluetoothctl`](https://www.makeuseof.com/manage-bluetooth-linux-with-bluetoothctl/).
-Use the command `scan on` for finding your device, then use `pair <mac_address>` for pairing it.
+```
+bluetoothctl
+scan on
+pair <bt_mac_addr>
+trust <bt_mac_addr>
+exit
+```
+When requested, enter the PIN in your EV3 and computer.
 
 ## Usage
 
@@ -35,5 +48,10 @@ Use the command `scan on` for finding your device, then use `pair <mac_address>`
 Switch it on, that's all!
 
 ### Computer
-
-Run the script `./script/run.bash` in the root folder, and enjoy!
+```
+source lego-nb/bin/activate
+cd lego-nb/EV3-NB
+jupyter notebook --port=8888 --ServerApp.port_retries=0 --no-browser \
+                 --IdentityProvider.token='' --ip 0.0.0.0
+```
+[Open the EV3 notebook in your browser and enjoy!](http://localhost:8888/notebooks/EV3_notebook.ipynb)
